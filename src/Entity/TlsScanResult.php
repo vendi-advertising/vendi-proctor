@@ -47,6 +47,16 @@ class TlsScanResult
      */
     private $dateTimeCreated;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $hostnameTested;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $ipTested;
+
     public function __construct()
     {
         $this->dateTimeCreated = new \DateTime();
@@ -113,6 +123,30 @@ class TlsScanResult
     public function setIsValid(bool $isValid): self
     {
         $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    public function getHostnameTested(): ?string
+    {
+        return $this->hostnameTested;
+    }
+
+    public function setHostnameTested(string $hostnameTested): self
+    {
+        $this->hostnameTested = $hostnameTested;
+
+        return $this;
+    }
+
+    public function getIpTested(): ?string
+    {
+        return $this->ipTested;
+    }
+
+    public function setIpTested(string $ipTested): self
+    {
+        $this->ipTested = $ipTested;
 
         return $this;
     }

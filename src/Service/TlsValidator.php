@@ -34,17 +34,18 @@ class TlsValidator
 
     public function validate_single_site_tls(Website $website)
     {
+        $ca_bundle_filepath = $this->caBundleLoader->get_most_recent_pem_file();
+
         $result = new TlsScanResult();
         $result->setWebsite($website);
 
-        $ca_bundle_filepath = $this->caBundleLoader->get_most_recent_pem_file();
-
         $hostname = $website->getDomain();
-        $ip_or_hostname = $website->getIp();
+        $ip = $website->getIp();
 
-        //If the direct host isn't supplied, talk directly to the main host
-        if(!$ip_or_hostname){
-            $ip_or_hostname = $hostname;
+        //If we didn't supply an IP, manually get it here.
+        //We will log that IP address that we used to connect to for auditing.
+        if(!$ip){
+            $ip = \gethostbyname($hostname);
         }
 
         //See https://secure.php.net/manual/en/context.ssl.php
@@ -62,7 +63,7 @@ class TlsValidator
         //Since we use Cloudflare for a lot of things but some clients have their
         //own DNS for internal, we sometimes need to talk directly to the server
         //and cut the proxy out of the loop.
-        $url = "ssl://{$ip_or_hostname}:443";
+        $url = "ssl://{$ip}:443";
 
         //Set the PHP docs for more details
         $stream = stream_context_create($stream_options);
@@ -76,24 +77,22 @@ class TlsValidator
         // dump($cert_parts);
 
         $result->setRawTlsData($cert_parts);
+        $result->setHostnameTested($hostname);
+        $result->setIpTested($ip);
 
         $validators = [
-            'DateValidator',
-            'DomainNameValidator',
+            DateValidator::class,
+            DomainNameValidator::class,
         ];
 
-        //The above validators are in this namespace
-        $ns = '\\App\\CertificateValidators';
 
         try{
             $is_valid = true;
             foreach($validators as $validator){
 
-                //Build a fully qualified class name
-                $fqn = $ns . '\\' . $validator;
-
                 //Create a dynamic validator
-                $dv = new $fqn($cert_parts, $result, $website);
+                /** @var  CertificateValidatorInterface */
+                $dv = new $validator($cert_parts, $result, $website);
                 if(!$dv->is_valid()){
                     $is_valid = false;
                     break;
