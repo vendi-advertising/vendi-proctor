@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Status{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Status</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Status</td>
+                <td>Domain</td>
+                <td>Last Check</td>
+                <td>TLS Valid From</td>
+                <td>TLS Valid To</td>
+            </tr>
+        </thead>
+        <tbody>
+    {% for website in websites %}
+        {% set last_scan = website.tlsScanResults | last %}
+            <tr>
+                <td>
+                    {% if last_scan.isValid %}
+                        &#9989;
+                    {% else %}
+                        &#10060;
+                    {% endif %}
+                </td>
+                <td>{{ website.domain }}</td>
+                <td>{{ last_scan.dateTimeCreated |date("Y-m-d H:i") }}</td>
+                <td>{{ last_scan.dateValidFrom |date("Y-m-d H:i") }}</td>
+                <td>{{ last_scan.dateValidTo |date("Y-m-d H:i") }}</td>
+            </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+
+
+</div>
+{% endblock %}

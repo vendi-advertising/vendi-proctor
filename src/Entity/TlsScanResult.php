@@ -62,6 +62,11 @@ class TlsScanResult
         $this->dateTimeCreated = new \DateTime();
     }
 
+    public function getDateTimeCreated() : \DateTime
+    {
+        return $this->dateTimeCreated;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
