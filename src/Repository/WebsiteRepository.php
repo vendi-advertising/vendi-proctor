@@ -6,7 +6,6 @@ namespace App\Repository;
 
 use App\Entity\Website;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -24,14 +23,13 @@ class WebsiteRepository extends ServiceEntityRepository
 
     public function findAllForReadonlyReport()
     {
-
         $query = $this->createNativeNamedQuery('websiteReadOnlyResult');
 
         $ret = $query->getResult();
         $new_ret = [];
-        foreach($ret as $r){
+        foreach ($ret as $r) {
             $ws = array_shift($r);
-            foreach($r as $k => $v){
+            foreach ($r as $k => $v) {
                 $ws->lastScanArray[$k] = $v;
             }
             $new_ret[] = $ws;
@@ -39,5 +37,4 @@ class WebsiteRepository extends ServiceEntityRepository
 
         return $new_ret;
     }
-
 }

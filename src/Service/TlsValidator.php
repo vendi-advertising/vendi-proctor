@@ -73,35 +73,32 @@ class TlsValidator
 
         //Set the PHP docs for more details
         $stream = stream_context_create($stream_options);
-        try{
+        try {
             $client = stream_socket_client($url, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $stream);
             $context = stream_context_get_params($client);
             //This is what we're most interested in
             $cert = $context['options']['ssl']['peer_certificate'];
             $cert_parts = openssl_x509_parse($cert);
-        }catch(\Exception $ex){
-
+        } catch (\Exception $ex) {
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
 
             $cert_parts = null;
-        }finally{
-            if(isset($client)){
+        } finally {
+            if (isset($client)) {
                 fclose($client);
             }
         }
 
         $result->setRawTlsData($cert_parts);
 
-        if($cert_parts){
-
+        if ($cert_parts) {
             $validators = [
                 DateValidator::class,
                 DomainNameValidator::class,
             ];
 
             try {
-
                 $statuses = [];
 
                 foreach ($validators as $validator) {
@@ -114,7 +111,7 @@ class TlsValidator
                     $local_result = $dv->run_test();
 
                     //Sanity check the result
-                    switch($local_result){
+                    switch ($local_result) {
 
                         //Warnings and errors are both exceptions, so grab the message
                         case CertificateValidatorInterface::STATUS_ERROR:
@@ -139,14 +136,13 @@ class TlsValidator
                     $statuses[] = $local_result;
                 }
 
-                if(in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)){
+                if (in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)) {
                     $result->set_status_error();
                 } elseif (in_array(CertificateValidatorInterface::STATUS_WARNING, $statuses)) {
                     $result->set_status_warning();
-                }else{
+                } else {
                     $result->set_status_valid();
                 }
-
             } catch (\Exception $ex) {
                 throw new \Exception(
                     'The TLS validator encountered an unhandled exception',

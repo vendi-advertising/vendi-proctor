@@ -7,10 +7,10 @@ namespace App\DataFixtures;
 use App\Entity\Website;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use Webmozart\PathUtil\Path;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use function GuzzleHttp\json_decode;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Webmozart\PathUtil\Path;
 
 class AppFixtures extends Fixture
 {
@@ -36,7 +36,7 @@ class AppFixtures extends Fixture
 
         $sample_data = Path::join($app_root, 'sample_data/websites.json');
 
-        if($this->fileSystem->exists($sample_data)){
+        if ($this->fileSystem->exists($sample_data)) {
             $preload = json_decode(file_get_contents($sample_data));
         }
 
@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
                 $website->setIp(array_shift($item));
             }
             if (count($item)) {
-                $website->setPort((int)array_shift($item));
+                $website->setPort((int) array_shift($item));
             }
 
             $manager->persist($website);

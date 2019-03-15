@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\CertificateValidators;
 
+use App\Exception\Tls\CertDomainMismatchException;
 use App\Exception\Tls\CertMissingDataException;
 use App\Exception\Tls\CertStrangeSANException;
-use App\Exception\Tls\CertDomainMismatchException;
 
 class DomainNameValidator extends CertificateValidatorBase
 {
@@ -119,6 +119,6 @@ class DomainNameValidator extends CertificateValidatorBase
             }
         }
 
-        return $this->add_exception( CertDomainMismatchException::create());
+        return $this->add_exception(CertDomainMismatchException::create());
     }
 }

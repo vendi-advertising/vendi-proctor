@@ -7,13 +7,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\ColumnResult;
 use Doctrine\ORM\Mapping\EntityResult;
+use Doctrine\ORM\Mapping\FieldResult;
+use Doctrine\ORM\Mapping\NamedNativeQueries;
+use Doctrine\ORM\Mapping\NamedNativeQuery;
+use Doctrine\ORM\Mapping\SqlResultSetMapping;
+use Doctrine\ORM\Mapping\SqlResultSetMappings;
 
 /**
  * @NamedNativeQueries({

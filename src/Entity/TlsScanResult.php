@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use App\CertificateValidators\CertificateValidatorInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TlsScanResultRepository")
@@ -64,7 +64,6 @@ class TlsScanResult
      * @ORM\Column(type="string", length=255)
      */
     private $status;
-
 
     public function __construct()
     {
