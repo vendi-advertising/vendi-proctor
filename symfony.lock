@@ -141,6 +141,9 @@
     "guzzlehttp/psr7": {
         "version": "1.5.2"
     },
+    "jakeasmith/http_build_url": {
+        "version": "1.0.1"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },

@@ -7,6 +7,7 @@
         "ext-iconv": "*",
         "eightpoints/guzzle-bundle": "^7.5",
         "friendsofphp/php-cs-fixer": "^2.14",
+        "jakeasmith/http_build_url": "^1.0",
         "jmose/command-scheduler-bundle": "^2.0",
         "paragonie/certainty": "^2",
         "stof/doctrine-extensions-bundle": "^1.3",
