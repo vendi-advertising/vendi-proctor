@@ -39,11 +39,16 @@ class TlsValidator
 
         $hostname = $website->getDomain();
         $ip = $website->getIp();
+        $port = $website->getPort();
 
         //If we didn't supply an IP, manually get it here.
         //We will log that IP address that we used to connect to for auditing.
         if (!$ip) {
             $ip = \gethostbyname($hostname);
+        }
+
+        if (!$port) {
+            $port = 443;
         }
 
         //See https://secure.php.net/manual/en/context.ssl.php
@@ -61,7 +66,7 @@ class TlsValidator
         //Since we use Cloudflare for a lot of things but some clients have their
         //own DNS for internal, we sometimes need to talk directly to the server
         //and cut the proxy out of the loop.
-        $url = "ssl://{$ip}:443";
+        $url = "ssl://{$ip}:{$port}";
 
         //Set the PHP docs for more details
         $stream = stream_context_create($stream_options);

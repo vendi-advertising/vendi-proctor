@@ -36,4 +36,15 @@ class CertDateException extends CertNotValidException
             )
         );
     }
+
+    public static function create_expiring_soon(\DateTime $cert_date): self
+    {
+        return new self(
+            sprintf(
+                'The supplied cert will be expiring in %1$d days on %2$s',
+                $cert_date->diff(new Date())->format('%a'),
+                $cert_date->format(\DateTimeInterface::RFC3339_EXTENDED)
+            )
+        );
+    }
 }

@@ -48,6 +48,12 @@ class DateValidator extends CertificateValidatorBase
             return $this->add_exception(CertDateException::create_expired($validToDate));
         }
 
+        $future = clone $now;
+        $future->add(\date_interval_create_from_date_string('10 days'));
+        if ($future > $validToDate) {
+            return $this->add_warning(CertDateException::create_expiring_soon($validToDate));
+        }
+
         return CertificateValidatorInterface::STATUS_VALID;
     }
 }

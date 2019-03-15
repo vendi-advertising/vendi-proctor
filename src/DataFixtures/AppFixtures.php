@@ -15,6 +15,7 @@ class AppFixtures extends Fixture
         $preload = [
             ['inlandpackaging.com', '159.203.98.112'],
             ['vendiadvertising.com'],
+            ['titan.vendiadvertising.com', null, 5001],
         ];
 
         foreach ($preload as $item) {
@@ -22,6 +23,9 @@ class AppFixtures extends Fixture
             $website->setDomain(array_shift($item));
             if (count($item)) {
                 $website->setIp(array_shift($item));
+            }
+            if (count($item)) {
+                $website->setPort((int)array_shift($item));
             }
 
             $manager->persist($website);

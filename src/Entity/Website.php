@@ -35,6 +35,11 @@ class Website
      */
     private $tlsScanResults;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $port;
+
     public function __construct()
     {
         $this->validFrom = new ArrayCollection();
@@ -102,6 +107,18 @@ class Website
                 $tlsScanResult->setWebsite(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPort(): ?int
+    {
+        return $this->port;
+    }
+
+    public function setPort(?int $port): self
+    {
+        $this->port = $port;
 
         return $this;
     }
