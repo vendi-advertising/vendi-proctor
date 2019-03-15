@@ -20,13 +20,35 @@ class UptimeTester
         $this->client = $client;
     }
 
-    public function validate_single_site()
+    public function validate_single_site(Website $website)
     {
-        $res = $this
+        $time_start = microtime(true);
+
+        $url_parts = [
+            'scheme' => 'https',
+            'host' => $website->getDomain(),
+            'path' => '/'
+        ];
+
+        if($website->getPort()){
+            $url_parts['port'] = $website->getPort();
+        }
+
+        $url = \http_build_url([], $url_parts);
+
+        dd($url);
+
+        try {
+            $res = $this
                 ->client
                 ->request(
-                    'GET', 'https://api.github.com/user', [
-            'auth' => ['user', 'pass']
-]);
+                    'GET',
+                    $url
+                );
+        }
+
+        $time_end = microtime(true);
+        $execution_time = $time_end - $time_start;
+
     }
 }
