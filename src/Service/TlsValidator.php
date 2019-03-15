@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\CertificateValidators\CertificateValidatorInterface;
-use App\CertificateValidators\DateValidator;
-use App\CertificateValidators\DomainNameValidator;
+use App\AgentTests\AgentTestInterface;
+use App\AgentTests\Tls\DateValidator;
+use App\AgentTests\Tls\DomainNameValidator;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
 use App\Exception\Tls\CertMissingDataException;
@@ -109,7 +109,7 @@ class TlsValidator
                 foreach ($validators as $validator) {
 
                     //Create a dynamic validator
-                    /** @var  CertificateValidatorInterface */
+                    /** @var  AgentTestInterface */
                     $dv = new $validator($cert_parts, $result, $website);
 
                     //Get the result as a string
@@ -119,18 +119,18 @@ class TlsValidator
                     switch ($local_result) {
 
                         //Warnings and errors are both exceptions, so grab the message
-                        case CertificateValidatorInterface::STATUS_ERROR:
-                        case CertificateValidatorInterface::STATUS_WARNING:
+                        case AgentTestInterface::STATUS_ERROR:
+                        case AgentTestInterface::STATUS_WARNING:
                             $result->setFailReason($dv->get_last_exception()->getMessage());
                             break;
 
                         //NOOP
-                        case CertificateValidatorInterface::STATUS_VALID:
+                        case AgentTestInterface::STATUS_VALID:
                             break;
 
                         //This is set by the base class as the default but implementations
                         //must always change it
-                        case CertificateValidatorInterface::STATUS_UNKNOWN:
+                        case AgentTestInterface::STATUS_UNKNOWN:
                             throw new \Exception('The UNKNOWN status may never be used and must be overriden');
 
                         //This should never happen so we're guarding against typos pretty much
@@ -141,9 +141,9 @@ class TlsValidator
                     $statuses[] = $local_result;
                 }
 
-                if (in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)) {
+                if (in_array(AgentTestInterface::STATUS_ERROR, $statuses)) {
                     $result->set_status_error();
-                } elseif (in_array(CertificateValidatorInterface::STATUS_WARNING, $statuses)) {
+                } elseif (in_array(AgentTestInterface::STATUS_WARNING, $statuses)) {
                     $result->set_status_warning();
                 } else {
                     $result->set_status_valid();

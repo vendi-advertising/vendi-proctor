@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\CertificateValidators;
+namespace App\AgentTests\Tls;
 
+use App\AgentTests\AgentTestInterface;
 use App\Exception\Tls\CertDomainMismatchException;
 use App\Exception\Tls\CertMissingDataException;
 use App\Exception\Tls\CertStrangeSANException;
@@ -85,7 +86,7 @@ class DomainNameValidator extends CertificateValidatorBase
 
         $cn = (string) $subject['CN'];
         if ($this->does_domain_match($cn)) {
-            return CertificateValidatorInterface::STATUS_VALID;
+            return AgentTestInterface::STATUS_VALID;
         }
 
         if (!array_key_exists('extensions', $cert_parts)) {
@@ -115,7 +116,7 @@ class DomainNameValidator extends CertificateValidatorBase
             }
 
             if ($this->does_domain_match($domain)) {
-                return CertificateValidatorInterface::STATUS_VALID;
+                return AgentTestInterface::STATUS_VALID;
             }
         }
 

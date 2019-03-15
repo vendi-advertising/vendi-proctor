@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\CertificateValidators;
+namespace App\AgentTests\Tls;
 
+use App\AgentTests\AgentTestInterface;
 use App\Exception\Tls\CertDateException;
 use App\Exception\Tls\CertMissingDataException;
 
@@ -54,6 +55,6 @@ class DateValidator extends CertificateValidatorBase
             return $this->add_warning(CertDateException::create_expiring_soon($validToDate));
         }
 
-        return CertificateValidatorInterface::STATUS_VALID;
+        return AgentTestInterface::STATUS_VALID;
     }
 }

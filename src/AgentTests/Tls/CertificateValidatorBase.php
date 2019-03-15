@@ -2,35 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\CertificateValidators;
+namespace App\AgentTests\Tls;
 
+use App\AgentTests\AgentTestBase;
+use App\AgentTests\AgentTestInterface;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
 
-abstract class CertificateValidatorBase implements CertificateValidatorInterface
+abstract class CertificateValidatorBase extends AgentTestBase
 {
     private $cert_parts;
     private $result;
     private $website;
     private $exceptions = [];
-    private $status;
 
     public function __construct(array $cert_parts, TlsScanResult $result, Website $website)
     {
         $this->cert_parts = $cert_parts;
         $this->result = $result;
         $this->website = $website;
-        $this->status = CertificateValidatorInterface::STATUS_UNKNOWN;
-    }
-
-    final public function get_status() : string
-    {
-        return $this->status;
-    }
-
-    final public function set_status(string $status)
-    {
-        $this->status = $status;
+        $this->status = AgentTestInterface::STATUS_UNKNOWN;
     }
 
     final public function get_cert_parts() : array
@@ -60,13 +51,13 @@ abstract class CertificateValidatorBase implements CertificateValidatorInterface
     final public function add_exception(\Exception $ex) : string
     {
         $this->exceptions[] = $ex;
-        return CertificateValidatorInterface::STATUS_ERROR;
+        return AgentTestInterface::STATUS_ERROR;
     }
 
     final public function add_warning(\Exception $ex): string
     {
         $this->exceptions[] = $ex;
-        return CertificateValidatorInterface::STATUS_WARNING;
+        return AgentTestInterface::STATUS_WARNING;
     }
 
     final public function has_exception() : bool

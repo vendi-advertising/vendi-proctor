@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\CertificateValidators\CertificateValidatorInterface;
+use App\AgentTests\AgentTestInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -72,22 +72,22 @@ class TlsScanResult
 
     public function set_status_error()
     {
-        $this->setStatus(CertificateValidatorInterface::STATUS_ERROR);
+        $this->setStatus(AgentTestInterface::STATUS_ERROR);
     }
 
     public function set_status_valid()
     {
-        $this->setStatus(CertificateValidatorInterface::STATUS_VALID);
+        $this->setStatus(AgentTestInterface::STATUS_VALID);
     }
 
     public function set_status_warning()
     {
-        $this->setStatus(CertificateValidatorInterface::STATUS_WARNING);
+        $this->setStatus(AgentTestInterface::STATUS_WARNING);
     }
 
     public function get_is_valid() : bool
     {
-        return CertificateValidatorInterface::STATUS_VALID === $this->status;
+        return AgentTestInterface::STATUS_VALID === $this->status;
     }
 
     public function getDateTimeCreated() : \DateTime
