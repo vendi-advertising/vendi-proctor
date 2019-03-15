@@ -7,8 +7,45 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\NamedNativeQuery;
+use Doctrine\ORM\Mapping\NamedNativeQueries;
+use Doctrine\ORM\Mapping\SqlResultSetMappings;
+use Doctrine\ORM\Mapping\SqlResultSetMapping;
+use Doctrine\ORM\Mapping\FieldResult;
+use Doctrine\ORM\Mapping\ColumnResult;
+use Doctrine\ORM\Mapping\EntityResult;
 
 /**
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name            = "websiteReadOnlyResult",
+ *          resultSetMapping= "websiteWithSingleTlsResult",
+ *          query           = "SELECT w.*, t.* FROM website w LEFT JOIN tls_scan_result t ON w.id = t.website_id LEFT JOIN ( SELECT website_id, MAX(date_time_created) as date_time_created FROM tls_scan_result t1 GROUP BY website_id ) q ON t.date_time_created = q.date_time_created AND t.website_id = q. website_id WHERE NOT q.date_time_created IS NULL"
+ *      ),
+ * })
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "websiteWithSingleTlsResult",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "\App\Entity\Website",
+ *                  fields      = {
+ *                      @FieldResult(name = "id"),
+ *                      @FieldResult(name = "domain"),
+ *                      @FieldResult(name = "ip"),
+ *                      @FieldResult(name = "port"),
+ *                  }
+ *              )
+ *          },
+ *          columns = {
+ *              @ColumnResult("date_time_created"),
+ *              @ColumnResult("date_valid_from"),
+ *              @ColumnResult("date_valid_to"),
+ *              @ColumnResult("fail_reason"),
+ *              @ColumnResult("status"),
+ *          }
+ *      ),
+ *})
  * @ORM\Entity(repositoryClass="App\Repository\WebsiteRepository")
  */
 class Website
@@ -39,6 +76,8 @@ class Website
      * @ORM\Column(type="integer", nullable=true)
      */
     private $port;
+
+    public $lastScanArray = [];
 
     public function __construct()
     {

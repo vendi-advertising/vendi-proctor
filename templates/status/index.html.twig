@@ -24,7 +24,7 @@
         </thead>
         <tbody>
     {% for website in websites %}
-        {% set last_scan = website.tlsScanResults | last %}
+        {% set last_scan = website.lastScanArray %}
         {% if last_scan %}
             <tr>
                 <td>
@@ -39,10 +39,10 @@
                     {% endif %}
                 </td>
                 <td>{{ website.domain }}</td>
-                <td>{{ last_scan.dateTimeCreated |date("Y-m-d H:i") }}</td>
-                <td>{{ last_scan.dateValidFrom |date("Y-m-d H:i") }}</td>
-                <td>{{ last_scan.dateValidTo |date("Y-m-d H:i") }}</td>
-                <td>{{ last_scan.failReason }}</td>
+                <td>{{ last_scan.date_time_created }}</td>
+                <td>{{ last_scan.date_valid_from }}</td>
+                <td>{{ last_scan.date_valid_to }}</td>
+                <td>{{ last_scan.fail_reason }}</td>
             </tr>
         {% else %}
             <tr>

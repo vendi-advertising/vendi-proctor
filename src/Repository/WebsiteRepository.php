@@ -24,48 +24,20 @@ class WebsiteRepository extends ServiceEntityRepository
 
     public function findAllForReadonlyReport()
     {
-        throw new \Exception('Not implemented yet');
-        $rsm = new ResultSetMapping();
-        $rsm->addEntityResult('\App\Entity\WebsiteReadonlyResult', 'w');
-        $rsm->addFieldResult('w', 'id', 'id');
-        $rsm->addFieldResult('w', 'domain', 'domain');
-        $rsm->addFieldResult('w', 'ip', 'ip');
-        $rsm->addFieldResult('w', 'tlsScanResults', 'tlsScanResults');
-        // $rsm->addFieldResult('w', 'id', 'id');
 
+        $query = $this->createNativeNamedQuery('websiteReadOnlyResult');
 
-        $sql = 'SELECT w.*, (SELECT * FROM tls_scan_result t WHERE t.website_id = w.id LIMIT 1) FROM website w';
+        $ret = $query->getResult();
+        $new_ret = [];
+        foreach($ret as $r){
+            $ws = array_shift($r);
+            foreach($r as $k => $v){
+                $ws->lastScanArray[$k] = $v;
+            }
+            $new_ret[] = $ws;
+        }
 
-        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
-        return $query->getResult();
+        return $new_ret;
     }
 
-    // /**
-    //  * @return Website[] Returns an array of Website objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('w.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Website
-    {
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
