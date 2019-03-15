@@ -51,6 +51,9 @@ class TlsValidator
             $port = 443;
         }
 
+        $result->setHostnameTested($hostname);
+        $result->setIpTested($ip);
+
         //See https://secure.php.net/manual/en/context.ssl.php
         $stream_options = [
             'ssl' => [
@@ -70,77 +73,87 @@ class TlsValidator
 
         //Set the PHP docs for more details
         $stream = stream_context_create($stream_options);
-        $client = stream_socket_client($url, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $stream);
-        $context = stream_context_get_params($client);
+        try{
+            $client = stream_socket_client($url, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $stream);
+            $context = stream_context_get_params($client);
+            //This is what we're most interested in
+            $cert = $context['options']['ssl']['peer_certificate'];
+            $cert_parts = openssl_x509_parse($cert);
+        }catch(\Exception $ex){
 
-        //This is what we're most interested in
-        $cert = $context['options']['ssl']['peer_certificate'];
-        $cert_parts = openssl_x509_parse($cert);
+            $result->setFailReason($ex->getMessage());
+            $result->set_status_error();
 
-        // dump($cert_parts);
+            $cert_parts = null;
+        }finally{
+            if(isset($client)){
+                fclose($client);
+            }
+        }
 
         $result->setRawTlsData($cert_parts);
-        $result->setHostnameTested($hostname);
-        $result->setIpTested($ip);
 
-        $validators = [
-            DateValidator::class,
-            DomainNameValidator::class,
-        ];
+        if($cert_parts){
 
-        try {
+            $validators = [
+                DateValidator::class,
+                DomainNameValidator::class,
+            ];
 
-            $statuses = [];
+            try {
 
-            foreach ($validators as $validator) {
+                $statuses = [];
 
-                //Create a dynamic validator
-                /** @var  CertificateValidatorInterface */
-                $dv = new $validator($cert_parts, $result, $website);
+                foreach ($validators as $validator) {
 
-                //Get the result as a string
-                $local_result = $dv->run_test();
+                    //Create a dynamic validator
+                    /** @var  CertificateValidatorInterface */
+                    $dv = new $validator($cert_parts, $result, $website);
 
-                //Sanity check the result
-                switch($local_result){
+                    //Get the result as a string
+                    $local_result = $dv->run_test();
 
-                    //Warnings and errors are both exceptions, so grab the message
-                    case CertificateValidatorInterface::STATUS_ERROR:
-                    case CertificateValidatorInterface::STATUS_WARNING:
-                        $result->setFailReason($dv->get_last_exception()->getMessage());
-                        break;
+                    //Sanity check the result
+                    switch($local_result){
 
-                    //NOOP
-                    case CertificateValidatorInterface::STATUS_VALID:
-                        break;
+                        //Warnings and errors are both exceptions, so grab the message
+                        case CertificateValidatorInterface::STATUS_ERROR:
+                        case CertificateValidatorInterface::STATUS_WARNING:
+                            $result->setFailReason($dv->get_last_exception()->getMessage());
+                            break;
 
-                    //This is set by the base class as the default but implementations
-                    //must always change it
-                    case CertificateValidatorInterface::STATUS_UNKNOWN:
-                        throw new \Exception('The UNKNOWN status may never be used and must be overriden');
+                        //NOOP
+                        case CertificateValidatorInterface::STATUS_VALID:
+                            break;
 
-                    //This should never happen so we're guarding against typos pretty much
-                    default:
-                        throw new \Exception(sprintf('An unsupported status was encountered: %1$s', $local_result));
+                        //This is set by the base class as the default but implementations
+                        //must always change it
+                        case CertificateValidatorInterface::STATUS_UNKNOWN:
+                            throw new \Exception('The UNKNOWN status may never be used and must be overriden');
+
+                        //This should never happen so we're guarding against typos pretty much
+                        default:
+                            throw new \Exception(sprintf('An unsupported status was encountered: %1$s', $local_result));
+                    }
+
+                    $statuses[] = $local_result;
                 }
 
-                $statuses[] = $local_result;
-            }
+                if(in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)){
+                    $result->set_status_error();
+                } elseif (in_array(CertificateValidatorInterface::STATUS_WARNING, $statuses)) {
+                    $result->set_status_warning();
+                }else{
+                    $result->set_status_valid();
+                }
 
-            if(in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)){
-                $result->set_status_error();
-            } elseif (in_array(CertificateValidatorInterface::STATUS_WARNING, $statuses)) {
-                $result->set_status_warning();
-            }else{
-                $result->set_status_valid();
+            } catch (\Exception $ex) {
+                throw new \Exception(
+                    'The TLS validator encountered an unhandled exception',
+                    0,
+                    $ex
+                );
             }
-
-        } catch (\Exception $ex) {
-            throw new \Exception(
-                'The TLS validator encountered an unhandled exception',
-                0,
-                $ex
-            );
         }
 
         $this->entityManager->persist($result);

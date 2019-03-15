@@ -6,6 +6,7 @@ namespace App\CertificateValidators;
 
 use App\Exception\Tls\CertMissingDataException;
 use App\Exception\Tls\CertStrangeSANException;
+use App\Exception\Tls\CertDomainMismatchException;
 
 class DomainNameValidator extends CertificateValidatorBase
 {
