@@ -84,20 +84,52 @@ class TlsValidator
         ];
 
         try {
-            $is_valid = true;
+
+            $statuses = [];
+
             foreach ($validators as $validator) {
 
                 //Create a dynamic validator
                 /** @var  CertificateValidatorInterface */
                 $dv = new $validator($cert_parts, $result, $website);
-                if (!$dv->is_valid()) {
-                    $is_valid = false;
-                    $result->setFailReason($dv->get_last_exception()->getMessage());
-                    break;
+
+                //Get the result as a string
+                $local_result = $dv->run_test();
+
+                //Sanity check the result
+                switch($local_result){
+
+                    //Warnings and errors are both exceptions, so grab the message
+                    case CertificateValidatorInterface::STATUS_ERROR:
+                    case CertificateValidatorInterface::STATUS_WARNING:
+                        $result->setFailReason($dv->get_last_exception()->getMessage());
+                        break;
+
+                    //NOOP
+                    case CertificateValidatorInterface::STATUS_VALID:
+                        break;
+
+                    //This is set by the base class as the default but implementations
+                    //must always change it
+                    case CertificateValidatorInterface::STATUS_UNKNOWN:
+                        throw new \Exception('The UNKNOWN status may never be used and must be overriden');
+
+                    //This should never happen so we're guarding against typos pretty much
+                    default:
+                        throw new \Exception(sprintf('An unsupported status was encountered: %1$s', $local_result));
                 }
+
+                $statuses[] = $local_result;
             }
 
-            $result->setIsValid($is_valid);
+            if(in_array(CertificateValidatorInterface::STATUS_ERROR, $statuses)){
+                $result->set_status_error();
+            } elseif (in_array(CertificateValidatorInterface::STATUS_WARNING, $statuses)) {
+                $result->set_status_warning();
+            }else{
+                $result->set_status_valid();
+            }
+
         } catch (\Exception $ex) {
             throw new \Exception(
                 'The TLS validator encountered an unhandled exception',

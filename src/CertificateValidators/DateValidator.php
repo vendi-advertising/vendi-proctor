@@ -9,19 +9,17 @@ use App\Exception\Tls\CertMissingDataException;
 
 class DateValidator extends CertificateValidatorBase
 {
-    public function is_valid() : bool
+    public function run_test() : string
     {
         $cert_parts = $this->get_cert_parts();
         $result = $this->get_result();
 
         if (!array_key_exists('validFrom_time_t', $cert_parts)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('validFrom_time_t'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('validFrom_time_t'));
         }
 
         if (!array_key_exists('validTo_time_t', $cert_parts)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('validTo_time_t'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('validTo_time_t'));
         }
 
         try {
@@ -29,8 +27,7 @@ class DateValidator extends CertificateValidatorBase
             $validFromDate = new \DateTime("@{$validFrom_time_t}");
             $result->setDateValidFrom($validFromDate);
         } catch (\Exception $ex) {
-            $this->add_exception(CertDateException::create_strange_date_format('validFrom_time_t', $validFrom_time_t));
-            return false;
+            return $this->add_exception(CertDateException::create_strange_date_format('validFrom_time_t', $validFrom_time_t));
         }
 
         try {
@@ -38,23 +35,19 @@ class DateValidator extends CertificateValidatorBase
             $validToDate = new \DateTime("@{$validTo_time_t}");
             $result->setDateValidTo($validToDate);
         } catch (\Exception $ex) {
-            $this->add_exception(CertDateException::create_strange_date_format('validTo_time_t', $validTo_time_t));
-            return false;
+            return $this->add_exception(CertDateException::create_strange_date_format('validTo_time_t', $validTo_time_t));
         }
 
         $now = new \DateTime();
 
         if ($now < $validFromDate) {
-            $this->add_exception(CertDateException::create_not_ready_yet($validFromDate));
-            return false;
+            return $this->add_exception(CertDateException::create_not_ready_yet($validFromDate));
         }
 
         if ($now > $validToDate) {
-            $this->add_exception(CertDateException::create_expired($validToDate));
-            return false;
+            return $this->add_exception(CertDateException::create_expired($validToDate));
         }
 
-        //Just in case we ever miss a return above we don't return true here
-        return !$this->has_exception();
+        return CertificateValidatorInterface::STATUS_VALID;
     }
 }

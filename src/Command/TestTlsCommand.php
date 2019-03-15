@@ -76,7 +76,7 @@ class TestTlsCommand extends ContainerAwareCommand
                         )
             ;
 
-            if(!$result->getIsValid()){
+            if(!$result->get_is_valid()){
                 $this->send_email($website, $result);
             }
         }

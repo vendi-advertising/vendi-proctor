@@ -9,7 +9,7 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Status</h1>
+    <h1>TLS Status</h1>
 
     <table>
         <thead>
@@ -19,6 +19,7 @@
                 <td>Last Check</td>
                 <td>TLS Valid From</td>
                 <td>TLS Valid To</td>
+                <td>Message</td>
             </tr>
         </thead>
         <tbody>
@@ -27,21 +28,27 @@
         {% if last_scan %}
             <tr>
                 <td>
-                    {% if last_scan.isValid %}
+                    {% if 'valid' == last_scan.status %}
                         &#9989;
-                    {% else %}
+                    {% elseif 'error' == last_scan.status %}
                         &#10060;
+                    {% elseif 'warning' == last_scan.status %}
+                        &#9888;
+                    {% else %}
+                        &#8265;
                     {% endif %}
                 </td>
                 <td>{{ website.domain }}</td>
                 <td>{{ last_scan.dateTimeCreated |date("Y-m-d H:i") }}</td>
                 <td>{{ last_scan.dateValidFrom |date("Y-m-d H:i") }}</td>
                 <td>{{ last_scan.dateValidTo |date("Y-m-d H:i") }}</td>
+                <td>{{ last_scan.failReason }}</td>
             </tr>
         {% else %}
             <tr>
-                <td>&#9888;</td>
+                <td>&#8252;</td>
                 <td>{{ website.domain }}</td>
+                <td>n/a</td>
                 <td>n/a</td>
                 <td>n/a</td>
                 <td>n/a</td>

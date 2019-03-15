@@ -13,12 +13,24 @@ abstract class CertificateValidatorBase implements CertificateValidatorInterface
     private $result;
     private $website;
     private $exceptions = [];
+    private $status;
 
     public function __construct(array $cert_parts, TlsScanResult $result, Website $website)
     {
         $this->cert_parts = $cert_parts;
         $this->result = $result;
         $this->website = $website;
+        $this->status = CertificateValidatorInterface::STATUS_UNKNOWN;
+    }
+
+    final public function get_status() : string
+    {
+        return $this->status;
+    }
+
+    final public function set_status(string $status)
+    {
+        $this->status = $status;
     }
 
     final public function get_cert_parts() : array
@@ -45,9 +57,16 @@ abstract class CertificateValidatorBase implements CertificateValidatorInterface
         return null;
     }
 
-    final public function add_exception(\Exception $ex)
+    final public function add_exception(\Exception $ex) : string
     {
         $this->exceptions[] = $ex;
+        return CertificateValidatorInterface::STATUS_ERROR;
+    }
+
+    final public function add_warning(\Exception $ex): string
+    {
+        $this->exceptions[] = $ex;
+        return CertificateValidatorInterface::STATUS_WARNING;
     }
 
     final public function has_exception() : bool

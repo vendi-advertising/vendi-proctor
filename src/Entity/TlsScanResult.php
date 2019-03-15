@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\CertificateValidators\CertificateValidatorInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TlsScanResultRepository")
@@ -40,11 +41,6 @@ class TlsScanResult
     private $rawTlsData = [];
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isValid;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private $dateTimeCreated;
@@ -64,9 +60,35 @@ class TlsScanResult
      */
     private $failReason;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
+
     public function __construct()
     {
         $this->dateTimeCreated = new \DateTime();
+    }
+
+    public function set_status_error()
+    {
+        $this->setStatus(CertificateValidatorInterface::STATUS_ERROR);
+    }
+
+    public function set_status_valid()
+    {
+        $this->setStatus(CertificateValidatorInterface::STATUS_VALID);
+    }
+
+    public function set_status_warning()
+    {
+        $this->setStatus(CertificateValidatorInterface::STATUS_WARNING);
+    }
+
+    public function get_is_valid() : bool
+    {
+        return CertificateValidatorInterface::STATUS_VALID === $this->status;
     }
 
     public function getDateTimeCreated() : \DateTime
@@ -127,18 +149,6 @@ class TlsScanResult
         return $this;
     }
 
-    public function getIsValid(): ?bool
-    {
-        return $this->isValid;
-    }
-
-    public function setIsValid(bool $isValid): self
-    {
-        $this->isValid = $isValid;
-
-        return $this;
-    }
-
     public function getHostnameTested(): ?string
     {
         return $this->hostnameTested;
@@ -171,6 +181,18 @@ class TlsScanResult
     public function setFailReason(?string $failReason): self
     {
         $this->failReason = $failReason;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

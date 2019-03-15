@@ -68,37 +68,33 @@ class DomainNameValidator extends CertificateValidatorBase
         return 0 === strcmp($test, $domain);
     }
 
-    public function is_valid() : bool
+    public function run_test() : string
     {
         $cert_parts = $this->get_cert_parts();
         $result = $this->get_result();
 
         if (!array_key_exists('subject', $cert_parts)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('subject'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('subject'));
         }
 
         $subject = $cert_parts['subject'];
         if (!array_key_exists('CN', $subject)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('subject/CN'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('subject/CN'));
         }
 
         $cn = (string) $subject['CN'];
         if ($this->does_domain_match($cn)) {
-            return !$this->has_exception();
+            return CertificateValidatorInterface::STATUS_VALID;
         }
 
         if (!array_key_exists('extensions', $cert_parts)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('extensions'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('extensions'));
         }
 
         $extensions = $cert_parts['extensions'];
 
         if (!array_key_exists('subjectAltName', $extensions)) {
-            $this->add_exception(CertMissingDataException::create_missing_key('extensions/subjectAltName'));
-            return false;
+            return $this->add_exception(CertMissingDataException::create_missing_key('extensions/subjectAltName'));
         }
 
         $subjectAltName = (string) $extensions['subjectAltName'];
@@ -107,23 +103,21 @@ class DomainNameValidator extends CertificateValidatorBase
         foreach ($parts as $part) {
             $sub_parts = \explode(':', trim($part));
             if (2 !== count($sub_parts)) {
-                $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange format: %1$s', $part)));
-                return false;
+                return $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange format: %1$s', $part)));
             }
 
             $type = array_shift($sub_parts);
             $domain = array_shift($sub_parts);
 
             if ('DNS' !== $type) {
-                $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange type: %1$s', $part)));
-                return false;
+                return $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange type: %1$s', $part)));
             }
 
             if ($this->does_domain_match($domain)) {
-                return !$this->has_exception();
+                return CertificateValidatorInterface::STATUS_VALID;
             }
         }
 
-        return false;
+        return $this->add_exception( CertDomainMismatchException::create());
     }
 }
