@@ -25,6 +25,7 @@ class WebsiteRepository extends ServiceEntityRepository
 
     public function findAllForReadonlyReport()
     {
+        throw new \Exception('Not implemented yet');
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult( '\App\Entity\WebsiteReadonlyResult', 'w');
         $rsm->addFieldResult('w', 'id', 'id');

@@ -13,7 +13,7 @@ class StatusController extends AbstractController
      */
     public function index(WebsiteRepository $websiteRepository)
     {
-        $websites = $websiteRepository-> findAllForReadonlyReport();
+        $websites = $websiteRepository-> findAll();
 
         return $this->render('status/index.html.twig', [
             'websites' => $websites,
