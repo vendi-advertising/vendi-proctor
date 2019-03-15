@@ -71,7 +71,7 @@ class TestTlsCommand extends ContainerAwareCommand
 
             $result = $this
                         ->tlsValidator
-                        ->validate_single_site_tls(
+                        ->validate_single_site(
                             $website
                         )
             ;

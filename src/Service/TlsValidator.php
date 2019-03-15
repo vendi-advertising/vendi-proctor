@@ -30,7 +30,12 @@ class TlsValidator
         }
     }
 
-    public function validate_single_site_tls(Website $website) : TlsScanResult
+    public function validate_single_site(Website $website)
+    {
+        return $this-> validate_single_site_tls($website);
+    }
+
+    protected function validate_single_site_tls(Website $website) : TlsScanResult
     {
         $ca_bundle_filepath = $this->caBundleLoader->get_most_recent_pem_file();
 

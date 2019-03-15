@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\CertificateValidators;
 
-interface CertificateValidatorInterface
+use App\AgentTests\AgentTestInterface;
+
+interface CertificateValidatorInterface extends AgentTestInterface
 {
     public const STATUS_VALID = 'valid';
 

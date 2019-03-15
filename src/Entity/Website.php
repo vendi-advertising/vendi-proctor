@@ -79,10 +79,16 @@ class Website
 
     public $lastScanArray = [];
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UptimeResult", mappedBy="website", orphanRemoval=true)
+     */
+    private $uptimeResults;
+
     public function __construct()
     {
         $this->validFrom = new ArrayCollection();
         $this->tlsScanResults = new ArrayCollection();
+        $this->uptimeResults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -158,6 +164,37 @@ class Website
     public function setPort(?int $port): self
     {
         $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UptimeResult[]
+     */
+    public function getUptimeResults(): Collection
+    {
+        return $this->uptimeResults;
+    }
+
+    public function addUptimeResult(UptimeResult $uptimeResult): self
+    {
+        if (!$this->uptimeResults->contains($uptimeResult)) {
+            $this->uptimeResults[] = $uptimeResult;
+            $uptimeResult->setWebsite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUptimeResult(UptimeResult $uptimeResult): self
+    {
+        if ($this->uptimeResults->contains($uptimeResult)) {
+            $this->uptimeResults->removeElement($uptimeResult);
+            // set the owning side to null (unless already changed)
+            if ($uptimeResult->getWebsite() === $this) {
+                $uptimeResult->setWebsite(null);
+            }
+        }
 
         return $this;
     }
