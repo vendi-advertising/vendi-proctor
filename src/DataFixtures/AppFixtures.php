@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Entity\Website;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use App\Entity\Website;
 
 class AppFixtures extends Fixture
 {
@@ -17,10 +17,10 @@ class AppFixtures extends Fixture
             ['vendiadvertising.com'],
         ];
 
-        foreach($preload as $item){
+        foreach ($preload as $item) {
             $website = new Website();
             $website->setDomain(array_shift($item));
-            if(count($item)){
+            if (count($item)) {
                 $website->setIp(array_shift($item));
             }
 

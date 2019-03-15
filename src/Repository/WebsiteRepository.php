@@ -1,14 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Repository;
 
 use App\Entity\Website;
-use App\Entity\WebsiteReadonlyResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\ResultSetMapping;
-
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method Website|null find($id, $lockMode = null, $lockVersion = null)
@@ -27,7 +24,7 @@ class WebsiteRepository extends ServiceEntityRepository
     {
         throw new \Exception('Not implemented yet');
         $rsm = new ResultSetMapping();
-        $rsm->addEntityResult( '\App\Entity\WebsiteReadonlyResult', 'w');
+        $rsm->addEntityResult('\App\Entity\WebsiteReadonlyResult', 'w');
         $rsm->addFieldResult('w', 'id', 'id');
         $rsm->addFieldResult('w', 'domain', 'domain');
         $rsm->addFieldResult('w', 'ip', 'ip');
@@ -37,7 +34,7 @@ class WebsiteRepository extends ServiceEntityRepository
 
         $sql = 'SELECT w.*, (SELECT * FROM tls_scan_result t WHERE t.website_id = w.id LIMIT 1) FROM website w';
 
-        $query = $this->getEntityManager()->createNativeQuery( $sql, $rsm );
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         return $query->getResult();
     }
 

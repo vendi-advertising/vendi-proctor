@@ -26,8 +26,7 @@ class CABundleLoader
         static $ca_bundle_filepath;
 
         //Only do this once for the app
-        if($force || !$ca_bundle_filepath){
-
+        if ($force || !$ca_bundle_filepath) {
             $app_root = $this->kernel->getProjectDir();
 
             //Folder for our CA stuff

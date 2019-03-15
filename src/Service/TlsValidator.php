@@ -9,9 +9,7 @@ use App\CertificateValidators\DateValidator;
 use App\CertificateValidators\DomainNameValidator;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
-use App\Exception\Tls\CertDateException;
 use App\Exception\Tls\CertMissingDataException;
-use App\Exception\Tls\CertNotValidException;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TlsValidator
@@ -27,7 +25,7 @@ class TlsValidator
 
     protected function is_cert_name_valid(array $cert_parts, TlsScanResult $result) : bool
     {
-        if(!array_key_exists('subject', $cert_parts)){
+        if (!array_key_exists('subject', $cert_parts)) {
             throw CertMissingDataException::create_missing_key('subject');
         }
     }
@@ -44,7 +42,7 @@ class TlsValidator
 
         //If we didn't supply an IP, manually get it here.
         //We will log that IP address that we used to connect to for auditing.
-        if(!$ip){
+        if (!$ip) {
             $ip = \gethostbyname($hostname);
         }
 
@@ -86,21 +84,21 @@ class TlsValidator
         ];
 
 
-        try{
+        try {
             $is_valid = true;
-            foreach($validators as $validator){
+            foreach ($validators as $validator) {
 
                 //Create a dynamic validator
                 /** @var  CertificateValidatorInterface */
                 $dv = new $validator($cert_parts, $result, $website);
-                if(!$dv->is_valid()){
+                if (!$dv->is_valid()) {
                     $is_valid = false;
                     break;
                 }
             }
 
             $result->setIsValid($is_valid);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             throw new \Exception(
                 'The TLS validator encountered an unhandled exception',
                 0,

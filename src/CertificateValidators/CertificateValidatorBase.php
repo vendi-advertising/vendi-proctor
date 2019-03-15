@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\CertificateValidators;
 
-use App\Entity\Website;
 use App\Entity\TlsScanResult;
+use App\Entity\Website;
 
 abstract class CertificateValidatorBase implements CertificateValidatorInterface
 {
-
     private $cert_parts;
     private $result;
     private $website;
@@ -39,7 +38,7 @@ abstract class CertificateValidatorBase implements CertificateValidatorInterface
 
     final public function get_last_exception() : \Exception
     {
-        if($this->has_exception()){
+        if ($this->has_exception()) {
             return end($this->exceptions);
         }
 
@@ -56,4 +55,3 @@ abstract class CertificateValidatorBase implements CertificateValidatorInterface
         return count($this->exceptions) > 0;
     }
 }
-
