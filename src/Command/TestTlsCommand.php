@@ -13,9 +13,9 @@ use App\Entity\Website;
 use App\Entity\TlsScanResult;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
-class TestCommand extends ContainerAwareCommand
+class TestTlsCommand extends ContainerAwareCommand
 {
-    protected static $defaultName = 'app:test';
+    protected static $defaultName = 'app:test:tls';
 
     private $tlsValidator;
 
@@ -81,7 +81,7 @@ class TestCommand extends ContainerAwareCommand
             }
         }
 
-        
+
 
         //proctor
 
