@@ -59,6 +59,11 @@ class TlsScanResult
      */
     private $ipTested;
 
+    /**
+     * @ORM\Column(type="string", length=1024, nullable=true)
+     */
+    private $failReason;
+
     public function __construct()
     {
         $this->dateTimeCreated = new \DateTime();
@@ -154,6 +159,18 @@ class TlsScanResult
     public function setIpTested(string $ipTested): self
     {
         $this->ipTested = $ipTested;
+
+        return $this;
+    }
+
+    public function getFailReason(): ?string
+    {
+        return $this->failReason;
+    }
+
+    public function setFailReason(?string $failReason): self
+    {
+        $this->failReason = $failReason;
 
         return $this;
     }

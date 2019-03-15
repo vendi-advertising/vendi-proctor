@@ -30,7 +30,7 @@ class TlsValidator
         }
     }
 
-    public function validate_single_site_tls(Website $website)
+    public function validate_single_site_tls(Website $website) : TlsScanResult
     {
         $ca_bundle_filepath = $this->caBundleLoader->get_most_recent_pem_file();
 
@@ -83,7 +83,6 @@ class TlsValidator
             DomainNameValidator::class,
         ];
 
-
         try {
             $is_valid = true;
             foreach ($validators as $validator) {
@@ -93,6 +92,7 @@ class TlsValidator
                 $dv = new $validator($cert_parts, $result, $website);
                 if (!$dv->is_valid()) {
                     $is_valid = false;
+                    $result->setFailReason($dv->get_last_exception()->getMessage());
                     break;
                 }
             }
@@ -108,5 +108,7 @@ class TlsValidator
 
         $this->entityManager->persist($result);
         $this->entityManager->flush();
+
+        return $result;
     }
 }

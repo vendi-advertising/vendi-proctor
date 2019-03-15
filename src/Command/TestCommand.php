@@ -6,12 +6,14 @@ namespace App\Command;
 
 use App\Repository\WebsiteRepository;
 use App\Service\TlsValidator;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Entity\Website;
+use App\Entity\TlsScanResult;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
-class TestCommand extends Command
+class TestCommand extends ContainerAwareCommand
 {
     protected static $defaultName = 'app:test';
 
@@ -19,11 +21,14 @@ class TestCommand extends Command
 
     private $websiteRepository;
 
-    public function __construct(TlsValidator $tlsValidator, WebsiteRepository $websiteRepository)
+    private $mailer;
+
+    public function __construct(TlsValidator $tlsValidator, WebsiteRepository $websiteRepository, \Swift_Mailer $mailer)
     {
         parent::__construct();
         $this->tlsValidator = $tlsValidator;
         $this->websiteRepository = $websiteRepository;
+        $this->mailer = $mailer;
     }
 
     protected function configure()
@@ -33,6 +38,29 @@ class TestCommand extends Command
         ;
     }
 
+    protected function send_email(Website $website, TlsScanResult $result)
+    {
+        $message = (new \Swift_Message(sprintf('TLS Cert Problem for %1$s', $website->getDomain())))
+        ->setFrom('test@localhost')
+        ->setTo('cjhaas@gmail.com')
+        ->setBody(
+            $this
+                ->getContainer()
+                ->get('templating')
+                ->render(
+                    'email/tls-fail.html.twig',
+                    [
+                        'website' => $website,
+                        'result' => $result,
+                    ]
+                ),
+            'text/html'
+        )
+    ;
+
+        $this->mailer->send($message);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
@@ -40,13 +68,22 @@ class TestCommand extends Command
         $websites = $this->websiteRepository->findAll();
         foreach ($websites as $website) {
             $io->text(sprintf('Testing site %1$s', $website->getDomain()));
-            $this
-                ->tlsValidator
-                ->validate_single_site_tls(
-                    $website
-                )
+
+            $result = $this
+                        ->tlsValidator
+                        ->validate_single_site_tls(
+                            $website
+                        )
             ;
+
+            if(!$result->getIsValid()){
+                $this->send_email($website, $result);
+            }
         }
+
+        
+
+        //proctor
 
 
 

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TLS Error{% endblock %}
+
+{% block body %}
+
+The website {{ website.domain }} failed the TLS test.
+
+<pre>
+    {{ result.failReason }}
+</pre>
+
+{% endblock %}
