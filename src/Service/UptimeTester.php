@@ -45,6 +45,8 @@ class UptimeTester
                     'GET',
                     $url
                 );
+        } catch (\Exception $ex) {
+
         }
 
         $time_end = microtime(true);
