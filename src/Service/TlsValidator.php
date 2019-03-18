@@ -11,8 +11,9 @@ use App\Entity\TlsScanResult;
 use App\Entity\Website;
 use App\Exception\Tls\CertMissingDataException;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\TestResultInterface;
 
-class TlsValidator
+class TlsValidator implements WebsiteTesterInterface
 {
     private $caBundleLoader;
     private $entityManager;
@@ -23,16 +24,9 @@ class TlsValidator
         $this->entityManager = $entityManager;
     }
 
-    protected function is_cert_name_valid(array $cert_parts, TlsScanResult $result) : bool
+    public function validate_single_site(Website $website) : TestResultInterface
     {
-        if (!array_key_exists('subject', $cert_parts)) {
-            throw CertMissingDataException::create_missing_key('subject');
-        }
-    }
-
-    public function validate_single_site(Website $website)
-    {
-        return $this-> validate_single_site_tls($website);
+        return $this->validate_single_site_tls($website);
     }
 
     protected function validate_single_site_tls(Website $website) : TlsScanResult

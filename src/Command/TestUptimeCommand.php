@@ -8,10 +8,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Service\UptimeTester;
+use App\Repository\WebsiteRepository;
 
-class TestUptimeCommand extends Command
+class TestUptimeCommand extends TestRunnerBase
 {
     protected static $defaultName = 'app:test:uptime';
+
+    public function __construct(UptimeTester $uptimeTester, WebsiteRepository $websiteRepository, \Swift_Mailer $mailer)
+    {
+        parent::__construct($uptimeTester, $websiteRepository, $mailer);
+    }
 
     protected function configure()
     {
@@ -20,19 +27,14 @@ class TestUptimeCommand extends Command
         ;
     }
 
+    public function get_email_template() : string
+    {
+        return 'email/tls-fail.html.twig';
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $this->run_test($io);
     }
 }

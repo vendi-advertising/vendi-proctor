@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TlsScanResultRepository")
  */
-class TlsScanResult
+class TlsScanResult implements TestResultInterface
 {
     /**
      * @ORM\Id()
@@ -177,7 +177,7 @@ class TlsScanResult
         return $this->failReason;
     }
 
-    public function setFailReason(?string $failReason): self
+    public function setFailReason(?string $failReason): TestResultInterface
     {
         $this->failReason = $failReason;
 

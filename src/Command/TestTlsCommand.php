@@ -13,22 +13,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TestTlsCommand extends ContainerAwareCommand
+class TestTlsCommand extends TestRunnerBase
 {
     protected static $defaultName = 'app:test:tls';
 
-    private $tlsValidator;
-
-    private $websiteRepository;
-
-    private $mailer;
-
     public function __construct(TlsValidator $tlsValidator, WebsiteRepository $websiteRepository, \Swift_Mailer $mailer)
     {
-        parent::__construct();
-        $this->tlsValidator = $tlsValidator;
-        $this->websiteRepository = $websiteRepository;
-        $this->mailer = $mailer;
+        parent::__construct($tlsValidator, $websiteRepository, $mailer);
     }
 
     protected function configure()
@@ -38,61 +29,14 @@ class TestTlsCommand extends ContainerAwareCommand
         ;
     }
 
-    protected function send_email(Website $website, TlsScanResult $result)
+    public function get_email_template() : string
     {
-        $message = (new \Swift_Message(sprintf('TLS Cert Problem for %1$s', $website->getDomain())))
-        ->setFrom('test@localhost')
-        ->setTo('cjhaas@gmail.com')
-        ->setBody(
-            $this
-                ->getContainer()
-                ->get('templating')
-                ->render(
-                    'email/tls-fail.html.twig',
-                    [
-                        'website' => $website,
-                        'result' => $result,
-                    ]
-                ),
-            'text/html'
-        )
-    ;
-
-        $this->mailer->send($message);
+        return 'email/tls-fail.html.twig';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-
-        $websites = $this->websiteRepository->findAll();
-        foreach ($websites as $website) {
-            $io->text(sprintf('Testing site %1$s', $website->getDomain()));
-
-            $result = $this
-                        ->tlsValidator
-                        ->validate_single_site(
-                            $website
-                        )
-            ;
-
-            if (!$result->get_is_valid()) {
-                $this->send_email($website, $result);
-            }
-        }
-
-
-
-        //proctor
-
-
-
-        // dump($cert_parts);
-
-
-
-
-        // $io->note('Text');
-        // $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $this->run_test($io);
     }
 }

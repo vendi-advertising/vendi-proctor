@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\AgentTests\AgentTestInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UptimeResultRepository")
  */
-class UptimeResult
+class UptimeResult implements TestResultInterface
 {
     /**
      * @ORM\Id()
@@ -35,7 +36,37 @@ class UptimeResult
     /**
      * @ORM\Column(type="string", length=1024, nullable=true)
      */
-    private $errorMessage;
+    private $failReason;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $dateTimeCreated;
+
+    public function __construct()
+    {
+        $this->dateTimeCreated = new \DateTime();
+    }
+
+    public function set_status_error()
+    {
+        $this->setStatus(AgentTestInterface::STATUS_ERROR);
+    }
+
+    public function set_status_valid()
+    {
+        $this->setStatus(AgentTestInterface::STATUS_VALID);
+    }
+
+    public function set_status_warning()
+    {
+        $this->setStatus(AgentTestInterface::STATUS_WARNING);
+    }
 
     public function getId(): ?int
     {
@@ -78,14 +109,31 @@ class UptimeResult
         return $this;
     }
 
-    public function getErrorMessage(): ?string
+    public function getFailReason(): ?string
     {
-        return $this->errorMessage;
+        return $this->failReason;
     }
 
-    public function setErrorMessage(?string $errorMessage): self
+    public function setFailReason(?string $failReason): TestResultInterface
     {
-        $this->errorMessage = $errorMessage;
+        $this->failReason = $failReason;
+
+        return $this;
+    }
+
+    public function get_is_valid() : bool
+    {
+        return AgentTestInterface::STATUS_VALID === $this->status;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
