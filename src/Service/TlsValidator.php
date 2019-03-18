@@ -7,11 +7,10 @@ namespace App\Service;
 use App\AgentTests\AgentTestInterface;
 use App\AgentTests\Tls\DateValidator;
 use App\AgentTests\Tls\DomainNameValidator;
+use App\Entity\TestResultInterface;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
-use App\Exception\Tls\CertMissingDataException;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\TestResultInterface;
 
 class TlsValidator implements WebsiteTesterInterface
 {

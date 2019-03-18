@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use App\AgentTests\AgentTestInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UptimeResultRepository")
@@ -137,5 +137,4 @@ class UptimeResult implements TestResultInterface
 
         return $this;
     }
-
 }

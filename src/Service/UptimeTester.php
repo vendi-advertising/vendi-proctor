@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -46,14 +46,13 @@ class UptimeTester implements WebsiteTesterInterface
             'path' => '/'
         ];
 
-        if($website->getPort()){
+        if ($website->getPort()) {
             $url_parts['port'] = $website->getPort();
         }
 
         $url = \http_build_url([], $url_parts);
 
         try {
-
             $time_start = microtime(true);
             $res = $client
                 ->request(
@@ -69,35 +68,30 @@ class UptimeTester implements WebsiteTesterInterface
             $result->setLoadTimeInMs($execution_time);
             $result->setHttpStatus($res->getStatusCode());
             $result->set_status_valid();
-
-        } catch(ConnectException $ex) {
+        } catch (ConnectException $ex) {
             //DNS/Connection problems
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
-
-        } catch( ClientException $ex ) {
+        } catch (ClientException $ex) {
             // HTTP 4xx
             $result->setHttpStatus($ex->getResponse()->getStatusCode());
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
-            
-        } catch( ServerException $ex ) {
+        } catch (ServerException $ex) {
             //HTTP 5xx
             $result->setHttpStatus($ex->getResponse()->getStatusCode());
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
-            
-        } catch( TooManyRedirectsException $ex ){
+        } catch (TooManyRedirectsException $ex) {
             //Too many redirects
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
-            
-        } catch( TransferException $ex ) {
+        } catch (TransferException $ex) {
             //General Guzzle Exception
             $result->setFailReason($ex->getMessage());
             $result->set_status_error();
 
-        // } catch (\Exception $ex) {
+            // } catch (\Exception $ex) {
         //     $result->setFailReason($ex->getMessage());
         //     $result->set_status_error();
         }
@@ -106,6 +100,5 @@ class UptimeTester implements WebsiteTesterInterface
         $this->entityManager->flush();
 
         return $result;
-
     }
 }

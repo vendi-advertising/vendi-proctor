@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\TlsScanResult;
-use App\Entity\Website;
 use App\Repository\WebsiteRepository;
 use App\Service\TlsValidator;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;

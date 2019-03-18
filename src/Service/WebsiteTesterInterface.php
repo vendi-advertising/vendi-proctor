@@ -1,11 +1,11 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
-use App\Entity\Website;
 use App\Entity\TestResultInterface;
+use App\Entity\Website;
 
 interface WebsiteTesterInterface
 {
