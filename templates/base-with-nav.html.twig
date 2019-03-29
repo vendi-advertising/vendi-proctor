@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            display: grid;
+            grid-template-columns: 15rem auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #left-nav header {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        #left-nav ul,
+        #left-nav li {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #left-nav li {
+            background-color: rgba(0, 0, 255, 1);
+            box-sizing: border-box;
+            padding: 0.5rem 1rem;
+        }
+
+        #left-nav li a {
+            color: #fff;
+            display: block;
+            text-decoration: none;
+        }
+
+        #left-nav li.selected {
+            background-color: rgba(0, 0, 255, 0.5);
+        }
+
+        #left-nav li:hover {
+            background-color: rgba(0, 0, 255, 0.25);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <nav id="left-nav">
+
+    {%
+        set nav = {
+            'page-1': {
+                'path': 'status',
+                'title': 'TLS Status',
+            },
+            'page-2': {
+                'path': 'site_add',
+                'title': 'Add New Site',
+            },
+        }
+    %}
+
+        <header>Admin Navigation</header>
+        <ul>
+            {% for item in nav  %}
+            {% set li_classes = app.request.attributes.get('_route') == item.path  ? 'selected' : '' %}
+                <li class="{{ li_classes }}"><a href="{{ path( item.path ) }}">{{ item.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <main>
+        {% block main_body %}
+
+        {% endblock %}
+    </main>
+
+{% endblock %}
