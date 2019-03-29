@@ -39,7 +39,7 @@ abstract class CertificateValidatorBase extends AgentTestBase
         return $this->website;
     }
 
-    final public function get_last_exception() : \Exception
+    final public function get_last_exception() : ? \Exception
     {
         if ($this->has_exception()) {
             return end($this->exceptions);

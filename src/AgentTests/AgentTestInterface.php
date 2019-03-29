@@ -20,7 +20,7 @@ interface AgentTestInterface
 
     public function run_test(): string;
 
-    public function get_last_exception(): \Exception;
+    public function get_last_exception(): ? \Exception;
 
     public function has_exception(): bool;
 }
