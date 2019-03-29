@@ -8,20 +8,28 @@ use App\AgentTests\AgentTestBase;
 use App\AgentTests\AgentTestInterface;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class CertificateValidatorBase extends AgentTestBase
 {
     private $cert_parts;
     private $result;
     private $website;
+    private $translator;
     private $exceptions = [];
 
-    public function __construct(array $cert_parts, TlsScanResult $result, Website $website)
+    public function __construct(array $cert_parts, TlsScanResult $result, Website $website, TranslatorInterface $translator)
     {
         $this->cert_parts = $cert_parts;
         $this->result = $result;
         $this->website = $website;
+        $this->translator = $translator;
         $this->status = AgentTestInterface::STATUS_UNKNOWN;
+    }
+
+    final public function get_translator() : TranslatorInterface
+    {
+        return $this->translator;
     }
 
     final public function get_cert_parts() : array

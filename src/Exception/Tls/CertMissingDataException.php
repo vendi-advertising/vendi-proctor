@@ -6,13 +6,16 @@ namespace App\Exception\Tls;
 
 class CertMissingDataException extends CertNotValidException
 {
-    public static function create_missing_key(string $key) : self
+    public static function create_missing_key(TranslatorInterface $translator, string $key) : self
     {
         return new self(
-            sprintf(
-                'The certificate is missing the key %1$s',
-                $key
-            )
+            $translator
+                ->trans(
+                    'The certificate is missing the key %key%',
+                    [
+                        '%key%' => $key,
+                    ]
+                )
         );
     }
 }

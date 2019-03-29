@@ -10,17 +10,20 @@ use App\AgentTests\Tls\DomainNameValidator;
 use App\Entity\TestResultInterface;
 use App\Entity\TlsScanResult;
 use App\Entity\Website;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TlsValidator implements WebsiteTesterInterface
 {
     private $caBundleLoader;
     private $entityManager;
+    private $translator;
 
-    public function __construct(CABundleLoader $caBundleLoader, EntityManagerInterface $entityManager)
+    public function __construct(CABundleLoader $caBundleLoader, EntityManagerInterface $entityManager, TranslatorInterface $translator)
     {
         $this->caBundleLoader = $caBundleLoader;
         $this->entityManager = $entityManager;
+        $this->translator = $translator;
     }
 
     public function validate_single_site(Website $website) : TestResultInterface
@@ -103,7 +106,7 @@ class TlsValidator implements WebsiteTesterInterface
 
                     //Create a dynamic validator
                     /** @var  AgentTestInterface */
-                    $dv = new $validator($cert_parts, $result, $website);
+                    $dv = new $validator($cert_parts, $result, $website, $this->translator);
 
                     //Get the result as a string
                     $local_result = $dv->run_test();

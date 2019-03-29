@@ -76,12 +76,12 @@ class DomainNameValidator extends CertificateValidatorBase
         $result = $this->get_result();
 
         if (!array_key_exists('subject', $cert_parts)) {
-            return $this->add_exception(CertMissingDataException::create_missing_key('subject'));
+            return $this->add_exception(CertMissingDataException::create_missing_key($this->get_translator(), 'subject'));
         }
 
         $subject = $cert_parts['subject'];
         if (!array_key_exists('CN', $subject)) {
-            return $this->add_exception(CertMissingDataException::create_missing_key('subject/CN'));
+            return $this->add_exception(CertMissingDataException::create_missing_key($this->get_translator(), 'subject/CN'));
         }
 
         $cn = (string) $subject['CN'];
@@ -90,13 +90,13 @@ class DomainNameValidator extends CertificateValidatorBase
         }
 
         if (!array_key_exists('extensions', $cert_parts)) {
-            return $this->add_exception(CertMissingDataException::create_missing_key('extensions'));
+            return $this->add_exception(CertMissingDataException::create_missing_key($this->get_translator(), 'extensions'));
         }
 
         $extensions = $cert_parts['extensions'];
 
         if (!array_key_exists('subjectAltName', $extensions)) {
-            return $this->add_exception(CertMissingDataException::create_missing_key('extensions/subjectAltName'));
+            return $this->add_exception(CertMissingDataException::create_missing_key($this->get_translator(), 'extensions/subjectAltName'));
         }
 
         $subjectAltName = (string) $extensions['subjectAltName'];
@@ -105,14 +105,14 @@ class DomainNameValidator extends CertificateValidatorBase
         foreach ($parts as $part) {
             $sub_parts = \explode(':', trim($part));
             if (2 !== count($sub_parts)) {
-                return $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange format: %1$s', $part)));
+                return $this->add_exception(CertStrangeSANException::create_strange_format($this->get_translator(), $part));
             }
 
             $type = array_shift($sub_parts);
             $domain = array_shift($sub_parts);
 
             if ('DNS' !== $type) {
-                return $this->add_exception(new CertStrangeSANException(sprintf('SAN item has a strange type: %1$s', $part)));
+                                return $this->add_exception(CertStrangeSANException::create_strange_type($this->get_translator(), $part));
             }
 
             if ($this->does_domain_match($domain)) {

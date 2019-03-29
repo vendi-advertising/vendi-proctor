@@ -6,8 +6,8 @@ namespace App\Exception\Tls;
 
 class CertDomainMismatchException extends CertNotValidException
 {
-    public static function create() : self
+    public static function create(TranslatorInterface $translator) : self
     {
-        return new self('The supplied domain is not valid for this certificate');
+        return new self($translator->trans('The supplied domain is not valid for this certificate'));
     }
 }
