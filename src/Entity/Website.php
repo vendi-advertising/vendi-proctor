@@ -84,6 +84,11 @@ class Website
      */
     private $uptimeResults;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $shouldScanTls;
+
     public function __construct()
     {
         $this->validFrom = new ArrayCollection();
@@ -195,6 +200,18 @@ class Website
                 $uptimeResult->setWebsite(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getShouldScanTls(): ?bool
+    {
+        return $this->shouldScanTls;
+    }
+
+    public function setShouldScanTls(bool $shouldScanTls): self
+    {
+        $this->shouldScanTls = $shouldScanTls;
 
         return $this;
     }

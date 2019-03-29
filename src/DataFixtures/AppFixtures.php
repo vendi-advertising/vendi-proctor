@@ -43,6 +43,7 @@ class AppFixtures extends Fixture
         foreach ($preload as $item) {
             $website = new Website();
             $website->setDomain(array_shift($item));
+            $website->setShouldScanTls(true);
             if (count($item)) {
                 $website->setIp(array_shift($item));
             }
